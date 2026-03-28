@@ -71,19 +71,33 @@ public class CitaService {
     
     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
 
+    // Validar que el medico exista
+    boolean medicoExiste = false;
+
+    for (CitaResponseDTO cita : citas) {
+        if (cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico())) {
+            medicoExiste = true;
+            break;
+        }
+    }
+
+    if (!medicoExiste) {
+        throw new RuntimeException("El medico ingresado no existe");
+    }
+
     // convertir a minutos
     String[] nuevaHoraSplit = request.getHora().split(":");
     int nuevaMin = Integer.parseInt(nuevaHoraSplit[0]) * 60 + Integer.parseInt(nuevaHoraSplit[1]);
 
-    // horarios permitidos entre(09:00 a 18:00)
-    int inicio = 9 * 60;   // 09:00
-    int fin = 18 * 60;     // 18:00
+    // horarios permitidos entre (09:00 a 18:00)
+    int inicio = 9 * 60;
+    int fin = 18 * 60;
 
     if (nuevaMin < inicio || nuevaMin > fin) {
         throw new RuntimeException("Las citas solo pueden agendarse entre 09:00 y 18:00");
     }
 
-    // diferencia de 15 minutos minumo entre cada cita
+    // diferencia de 15 minutos minimo entre cada cita
     for (CitaResponseDTO cita : citas) {
 
         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico());
@@ -118,7 +132,7 @@ public class CitaService {
 
     citas.add(nuevaCita);
     return nuevaCita;
-    }
+}
 
 
     //cancelar citas mediante nombre doc, fecha y hora
