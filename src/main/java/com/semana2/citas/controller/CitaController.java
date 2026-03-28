@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.semana2.citas.dto.CitaResponseDTO;
 import com.semana2.citas.dto.CrearCitaRequestDTO;
+import com.semana2.citas.dto.DisponibilidadResponseDTO;
 import com.semana2.citas.service.CitaService;
 
 import jakarta.validation.Valid;
@@ -59,9 +60,19 @@ public class CitaController {
     }
 
     @GetMapping("/disponibilidad")
-    public ResponseEntity<List<String>> disponibilidad(@RequestParam String nombreMedico, @RequestParam String fecha) {
+    public ResponseEntity<DisponibilidadResponseDTO> disponibilidad(
+        @RequestParam String nombreMedico,
+        @RequestParam String fecha) {
 
-        return ResponseEntity.ok(service.consultarDisponibilidad(nombreMedico, fecha));
+    List<String> horarios = service.consultarDisponibilidad(nombreMedico, fecha);
+
+    DisponibilidadResponseDTO response = DisponibilidadResponseDTO.builder()
+            .nombreMedico(nombreMedico)
+            .fecha(fecha)
+            .horariosDisponibles(horarios)
+            .build();
+
+        return ResponseEntity.ok(response);
 }
 
 
