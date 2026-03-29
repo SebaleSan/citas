@@ -71,7 +71,7 @@ public class CitaService {
     
     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
 
-    // Validar que el medico exista
+
     boolean medicoExiste = false;
 
     for (CitaResponseDTO cita : citas) {
@@ -180,8 +180,8 @@ public class CitaService {
 
     List<String> disponibles = new ArrayList<>();
 
-    int inicio = 9 * 60;   // 09:00
-    int fin = 18 * 60;     // 18:00
+        int inicio = 9 * 60;   
+        int fin = 18 * 60;     
 
     for (int minuto = inicio; minuto <= fin; minuto += 15) {
 
