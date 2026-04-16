@@ -30,46 +30,79 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc</artifactId>
-		</dependency>
 
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!-- Spring Boot -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- Oracle JDBC -->
+    <dependency>
+        <groupId>com.oracle.database.jdbc</groupId>
+        <artifactId>ojdbc11</artifactId>
+        <version>23.3.0.23.09</version>
+    </dependency>
+
+	<!-- Oracle Wallet Security Libraries -->
+	<dependency>
+		<groupId>com.oracle.database.security</groupId>
+		<artifactId>oraclepki</artifactId>
+		<version>23.3.0.23.09</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.oracle.database.security</groupId>
+		<artifactId>osdt_core</artifactId>
+		<version>23.3.0.23.09</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.oracle.database.security</groupId>
+		<artifactId>osdt_cert</artifactId>
+		<version>23.3.0.23.09</version>
+	</dependency>
+
+
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- Tests -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+</dependencies>
+
+	<repositories>
+    
+
+	<repository>
+    <id>oracle-maven</id>
+    <name>Oracle Maven Repository</name>
+    <url>https://maven.oracle.com</url>
+</repository>
+
+	</repositories>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -81,6 +114,51 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <jvmArguments>-Doracle.net.tns_admin=C:/oracle/wallet</jvmArguments>
+    </configuration>
+</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
