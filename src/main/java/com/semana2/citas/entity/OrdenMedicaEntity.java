@@ -32,6 +32,9 @@ public class OrdenMedicaEntity {
     @Column(name = "fecha_emision", nullable = false)
     private String fechaEmision;
 
+    @Column(name = "activa", nullable = false)
+    private Integer activa;
+
     @ManyToOne
     @JoinColumn(name = "medico_id", referencedColumnName = "id_medico")
     private MedicoEntity medico;
@@ -40,5 +43,8 @@ public class OrdenMedicaEntity {
     @JoinColumn(name = "paciente_id", referencedColumnName = "id_paciente"
     )
     private PacienteEntity paciente;
+
+
+
 
 }
