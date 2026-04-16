@@ -37,7 +37,7 @@ public class PacienteEntity {
     private Integer edad;
 
     @OneToMany(mappedBy = "paciente")
-    private java.util.List<OrdenMedicaEntity> ordenesMedicas;
+    private java.util.List<CitaMedicaEntity> ordenesMedicas;
 
 
 }
