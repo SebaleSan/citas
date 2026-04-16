@@ -19,8 +19,9 @@ import lombok.NoArgsConstructor;
 public class MedicoEntity {
 
     @Id
+    @Column(name="id_medico")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_medico;
+    private Long idMedico;
 
     @Column(name = "rut", nullable = false, unique = true)
     private String rut;

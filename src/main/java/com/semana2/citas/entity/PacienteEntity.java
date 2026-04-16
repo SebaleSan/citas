@@ -20,8 +20,9 @@ public class PacienteEntity {
     
     
     @Id
+    @Column(name="id_paciente")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_paciente;
+    private Long idPaciente;
 
     @Column(name = "rut", nullable = false, unique = true)
     private String rut;
