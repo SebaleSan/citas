@@ -36,6 +36,6 @@ public class MedicoEntity {
     private String especialidad;
 
     @OneToMany(mappedBy = "medico")
-    private java.util.List<OrdenMedicaEntity> ordenesMedicas;
+    private java.util.List<CitaMedicaEntity> ordenesMedicas;
     
 }

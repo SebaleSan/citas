@@ -16,6 +16,9 @@ public interface MedicoRepository extends JpaRepository<MedicoEntity, Long> {
     List<MedicoEntity> findByNombreContaining(String nombre);
     MedicoEntity findByNombreAndApellido(String nombre, String apellido);
 
+    @Query("SELECT m FROM MedicoEntity m WHERE m.idMedico = :idMedico")
+    MedicoEntity findMedicoById(@Param("idMedico") Long idMedico);
+
     @Query("SELECT m FROM MedicoEntity m WHERE m.especialidad = :especialidad")
     List<MedicoEntity> findMedicosByEspecialidad(@Param("especialidad") String especialidad);
 
