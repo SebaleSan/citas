@@ -27,7 +27,7 @@ public class CitaMedicaEntity {
     private Long idCita;
 
     @Column(name = "fecha_cita", nullable = false)
-    private String fechaCita;
+    private LocalDate fechaCita;
 
     @Column(name = "hora_cita", nullable = false)
     private String horaCita;

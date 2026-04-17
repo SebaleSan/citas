@@ -89,7 +89,6 @@ public class CitaService {
         }
     }
 
- 
     CitaMedicaEntity nuevaCita = new CitaMedicaEntity();
     nuevaCita.setFechaCita(request.getFechaCita());
     nuevaCita.setHoraCita(request.getHoraCita());
@@ -97,20 +96,18 @@ public class CitaService {
     nuevaCita.setMedico(medico);
     nuevaCita.setPaciente(paciente);
 
-    
-
     CitaMedicaEntity guardada = citaMedicaRepository.save(nuevaCita);
 
     return new CitaResponseDTO(
             guardada.getIdCita(),
-            guardada.getFechaCita(),
-            guardada.getHoraCita(),
+            guardada.getFechaCita(),             guardada.getHoraCita(),
             guardada.getFechaEmision(),
             guardada.getActiva(),
             guardada.getMedico().getIdMedico(),
             guardada.getPaciente().getIdPaciente()
     );
 }
+
 
   
 
@@ -205,23 +202,20 @@ public class CitaService {
 
     public List<String> consultarDisponibilidad(String rutMedico, String fecha) {
 
-    // Validar formato de fecha
+    // Validar formato de fecha dd-MM-yyyy
     if (!fecha.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
         throw new RuntimeException("La fecha debe tener formato dd-MM-yyyy");
     }
 
-    DateTimeFormatter entrada = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-    DateTimeFormatter bd = DateTimeFormatter.ofPattern("dd/MM/yy");
-
-    String fechaConvertida = LocalDate.parse(fecha, entrada).format(bd);
+    LocalDate fechaNormalizada = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
     // Buscar médico por RUT
     MedicoEntity medico = medicoRepository.findByRut(rutMedico)
             .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
 
     // Obtener todas las citas activas del médico en esa fecha
-     List<CitaMedicaEntity> citasExistentes = citaMedicaRepository
-            .findByMedicoAndFechaCitaAndActiva(medico, fechaConvertida, 1);
+    List<CitaMedicaEntity> citasExistentes = citaMedicaRepository
+            .findByMedicoAndFechaCitaAndActiva(medico, fechaNormalizada, 1);
 
     List<String> disponibles = new ArrayList<>();
 
@@ -252,6 +246,7 @@ public class CitaService {
 
     return disponibles;
 }
+
 
 
 
