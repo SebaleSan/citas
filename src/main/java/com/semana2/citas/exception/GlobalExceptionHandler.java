@@ -1,11 +1,13 @@
 package com.semana2.citas.exception;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -43,4 +45,20 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
+
+	 @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleJsonParseError(HttpMessageNotReadableException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("mensaje", "Formato de fecha inválido");
+        error.put("detalle", "La fecha debe enviarse en formato dd-MM-yyyy");
+        return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<Map<String, String>> handleDateTimeParseError(DateTimeParseException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("mensaje", "Formato de fecha inválido");
+        error.put("detalle", "La fecha debe enviarse en formato dd-MM-yyyy");
+        return ResponseEntity.badRequest().body(error);
+    }
 }
