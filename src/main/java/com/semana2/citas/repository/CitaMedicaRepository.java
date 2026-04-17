@@ -2,6 +2,7 @@ package com.semana2.citas.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,6 +37,13 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Lo
     List<CitaMedicaEntity> findOrdenesMedicasByFechaEmision(@Param("fechaEmision") String fechaEmision);
     
      List<CitaMedicaEntity> findByMedicoAndFechaCitaAndActiva(MedicoEntity medico, LocalDate fechaCita, Integer activa);
+     Optional<CitaMedicaEntity> findByMedicoAndFechaCitaAndHoraCitaAndActiva(
+        MedicoEntity medico,
+        LocalDate fecha,
+        String hora,
+        Integer activa
+    );
+
 
 
 }

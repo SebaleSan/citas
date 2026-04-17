@@ -1,5 +1,6 @@
 package com.semana2.citas.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -66,18 +67,23 @@ public class CitaController {
 
 
     
-//     @PutMapping("/cancelar")
-//     public ResponseEntity<?> cancelar(@RequestParam String fecha, @RequestParam String hora, @RequestParam String nombreMedico) {
+	@PutMapping("/cancelar")
+	public ResponseEntity<?> cancelar(@RequestParam LocalDate fecha,
+                                  @RequestParam String hora,
+                                  @RequestParam String rutMedico) {
 
-//     CitaResponseDTO cancelada = service.cancelar(fecha, hora, nombreMedico);
+		try {
+			CitaResponseDTO cancelada = service.cancelar(fecha, hora, rutMedico);
 
-//         if (cancelada == null) {
-//          return ResponseEntity.status(404)
-//                  .body("No se encontró una cita PROGRAMADA para el medico " + nombreMedico + " en la fecha " + fecha + " en el horario " + hora);
-//     }
+			return ResponseEntity.ok(cancelada);
 
-//         return ResponseEntity.ok(cancelada);
-//     }
+		} catch (RuntimeException ex) {
+			return ResponseEntity.status(404)
+					.body("No se encontró una cita PROGRAMADA para el médico con RUT " + rutMedico +
+							" en la fecha " + fecha + " en el horario " + hora);
+		}
+}
+
 
 //     @GetMapping("/disponibilidad")
 //     public ResponseEntity<DisponibilidadResponseDTO> disponibilidad(

@@ -16,6 +16,8 @@ import com.semana2.citas.repository.CitaMedicaRepository;
 import com.semana2.citas.repository.MedicoRepository;
 import com.semana2.citas.repository.PacienteRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class CitaService {
 
@@ -48,6 +50,8 @@ public class CitaService {
         return citaMedicaRepository.findAll().stream().map(this::toDTO).toList();
     }
 
+
+    // Crear una nueva cita médica con validaciones
 
     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
 
@@ -111,92 +115,6 @@ public class CitaService {
 
   
 
-    
-    
-//     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
-
-
-//     boolean medicoExiste = false;
-
-//     for (CitaResponseDTO cita : citas) {
-//         if (cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico())) {
-//             medicoExiste = true;
-//             break;
-//         }
-//     }
-
-//     if (!medicoExiste) {
-//         throw new RuntimeException("El medico ingresado no existe");
-//     }
-
-//     // convertir a minutos
-//     String[] nuevaHoraSplit = request.getHora().split(":");
-//     int nuevaMin = Integer.parseInt(nuevaHoraSplit[0]) * 60 + Integer.parseInt(nuevaHoraSplit[1]);
-
-//     // horarios permitidos entre (09:00 a 18:00)
-//     int inicio = 9 * 60;
-//     int fin = 18 * 60;
-
-//     if (nuevaMin < inicio || nuevaMin > fin) {
-//         throw new RuntimeException("Las citas solo pueden agendarse entre 09:00 y 18:00");
-//     }
-
-//     // diferencia de 15 minutos minimo entre cada cita
-//     for (CitaResponseDTO cita : citas) {
-
-//         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico());
-//         boolean mismaFecha = cita.getFecha().equals(request.getFecha());
-//         boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
-
-//         if (mismoMedico && mismaFecha && activa) {
-
-//             String[] horaExistenteSplit = cita.getHora().split(":");
-//             int existenteMin = Integer.parseInt(horaExistenteSplit[0]) * 60 + Integer.parseInt(horaExistenteSplit[1]);
-
-//             int diferencia = Math.abs(nuevaMin - existenteMin);
-
-//             if (diferencia < 15) {
-//                 throw new RuntimeException("Debe existir al menos 15 minutos entre citas para el mismo medico");
-//             }
-//         }
-//     }
-
-//     int nuevoId = citas.size() + 1;
-
-//     CitaResponseDTO nuevaCita = CitaResponseDTO.builder()
-//             .id(String.valueOf(nuevoId))
-//             .nombrePaciente(request.getNombrePaciente())
-//             .rutPaciente(request.getRutPaciente())
-//             .nombreMedico(request.getNombreMedico())
-//             .especialidad(request.getEspecialidad())
-//             .fecha(request.getFecha())
-//             .hora(request.getHora())
-//             .estado("PROGRAMADA")
-//             .build();
-
-//     citas.add(nuevaCita);
-//     return nuevaCita;
-// }
-
-
-//     //cancelar citas mediante nombre doc, fecha y hora
-//     public CitaResponseDTO cancelar(String fecha, String hora, String nombreMedico) {
-
-//     for (CitaResponseDTO cita : citas) {
-
-//         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
-//         boolean mismaFecha = cita.getFecha().equals(fecha);
-//         boolean mismaHora = cita.getHora().equals(hora);
-//         boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
-
-//         if (mismoMedico && mismaFecha && mismaHora && activa) {
-//             cita.setEstado("CANCELADA");
-//             return cita;
-//         }
-//     }
-
-//     return null;
-//     }
 
 //consultar la disponibilidad de un doc en un dia filtrando los horarios que ya tienen una cita programada
 
@@ -248,67 +166,36 @@ public class CitaService {
 }
 
 
+    @Transactional
+    public CitaResponseDTO cancelar(LocalDate fecha, String hora, String rutMedico) {
+
+        MedicoEntity medico = medicoRepository.findByRut(rutMedico)
+                .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
+
+        CitaMedicaEntity cita = citaMedicaRepository
+                .findByMedicoAndFechaCitaAndHoraCitaAndActiva(medico, fecha, hora, 1)
+                .orElseThrow(() -> new RuntimeException("No existe una cita programada con esos datos"));
+
+        cita.setActiva(0);
+        citaMedicaRepository.save(cita);
+
+        return new CitaResponseDTO(
+                cita.getIdCita(),
+                cita.getFechaCita(),
+                cita.getHoraCita(),
+                cita.getFechaEmision(),
+                cita.getActiva(),
+                cita.getMedico().getIdMedico(),
+                cita.getPaciente().getIdPaciente()
+        );
+    }
 
 
 
 
 
-    // public List<String> consultarDisponibilidad(String nombreMedico, String fecha) {
-
-    // // Validar formato de fecha
-    // if (!fecha.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
-    //     throw new RuntimeException("La fecha debe tener formato yyyy-MM-dd");
-    // }
-
-    // // Validar que el médico exista
-    // boolean medicoExiste = false;
-
-    // for (CitaResponseDTO cita : citas) {
-    //     if (cita.getNombreMedico().equalsIgnoreCase(nombreMedico)) {
-    //         medicoExiste = true;
-    //         break;
-    //     }
-    // }
-
-    // if (!medicoExiste) {
-    //     throw new RuntimeException("El medico no existe");
-    // }
 
 
-    // List<String> disponibles = new ArrayList<>();
-
-    //     int inicio = 9 * 60;   
-    //     int fin = 18 * 60;     
-
-    // for (int minuto = inicio; minuto <= fin; minuto += 15) {
-
-    //     int hora = minuto / 60;
-    //     int min = minuto % 60;
-
-    //     String horaFormateada = String.format("%02d:%02d", hora, min);
-
-    //     boolean ocupado = false;
-
-    //     for (CitaResponseDTO cita : citas) {
-
-    //         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
-    //         boolean mismaFecha = cita.getFecha().equals(fecha);
-    //         boolean mismaHora = cita.getHora().equals(horaFormateada);
-    //         boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
-
-    //         if (mismoMedico && mismaFecha && mismaHora && activa) {
-    //             ocupado = true;
-    //             break;
-    //         }
-    //     }
-
-    //     if (!ocupado) {
-    //         disponibles.add(horaFormateada);
-    //     }
-    // }
-
-    //      return disponibles;
-    // }
 
 
 
