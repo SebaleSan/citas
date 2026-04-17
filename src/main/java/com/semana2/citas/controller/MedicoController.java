@@ -1,5 +1,7 @@
 package com.semana2.citas.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/medicos")
 public class MedicoController {
+    
     private final MedicoService medicoService;
 
     public MedicoController(MedicoService medicoService) {
@@ -26,7 +29,7 @@ public class MedicoController {
     }
     
     @GetMapping
-    public ResponseEntity<?> obtenerTodos() {
+    public ResponseEntity<List<MedicoResponseDTO>> obtenerTodos() {
         return ResponseEntity.ok(medicoService.obtenerTodos());
     }
 

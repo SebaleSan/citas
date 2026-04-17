@@ -7,86 +7,58 @@ import org.springframework.stereotype.Service;
 
 import com.semana2.citas.dto.CitaResponseDTO;
 import com.semana2.citas.dto.CrearCitaRequestDTO;
+import com.semana2.citas.entity.CitaMedicaEntity;
+import com.semana2.citas.entity.MedicoEntity;
+import com.semana2.citas.entity.PacienteEntity;
+import com.semana2.citas.repository.CitaMedicaRepository;
+import com.semana2.citas.repository.MedicoRepository;
+import com.semana2.citas.repository.PacienteRepository;
 
 @Service
 public class CitaService {
 
-    private final List<CitaResponseDTO> citas = new ArrayList<>();
+   private final MedicoRepository medicoRepository;
+   private final PacienteRepository pacienteRepository;
+   private final CitaMedicaRepository citaMedicaRepository;
 
-    public CitaService() {
+   public CitaService(MedicoRepository medicoRepository, PacienteRepository pacienteRepository, CitaMedicaRepository citaMedicaRepository) {
+        this.medicoRepository = medicoRepository;
+        this.pacienteRepository = pacienteRepository;
+        this.citaMedicaRepository = citaMedicaRepository;
+    }
 
-		citas.add(CitaResponseDTO.builder().id("1").nombrePaciente("Juan Perez").rutPaciente("12.345.678-9").nombreMedico("Dr. Lopez").especialidad("Medicina General").fecha("2026-04-01").hora("09:00").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("2").nombrePaciente("Maria Gonzalez").rutPaciente("11.222.333-4").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-01").hora("10:00").estado("PROGRAMADA").build());
+    private CitaResponseDTO toDTO(CitaMedicaEntity citaMedica){
 
-        citas.add(CitaResponseDTO.builder().id("3").nombrePaciente("Carlos Rojas").rutPaciente("22.333.444-5").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-02").hora("11:00").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("4").nombrePaciente("Ana Torres").rutPaciente("33.444.555-6").nombreMedico("Dr. Vega").especialidad("Pediatria").fecha("2026-04-02").hora("12:00").estado("PROGRAMADA").build());
+        return new CitaResponseDTO(
+            citaMedica.getIdCita(),
+            citaMedica.getFechaCita(),
+            citaMedica.getHoraCita(),
+            citaMedica.getFechaEmision(),
+            citaMedica.getActiva(),
+            citaMedica.getMedico().getIdMedico(),
+            citaMedica.getPaciente().getIdPaciente()
+        );
+    }
 
-        citas.add(CitaResponseDTO.builder().id("5").nombrePaciente("Juan Perez").rutPaciente("12.345.678-9").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-03").hora("09:30").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("6").nombrePaciente("Maria Gonzalez").rutPaciente("11.222.333-4").nombreMedico("Dr. Lopez").especialidad("Medicina General").fecha("2026-04-03").hora("10:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("7").nombrePaciente("Diego Morales").rutPaciente("44.555.666-7").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-04").hora("11:30").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("8").nombrePaciente("Camila Torres").rutPaciente("55.666.777-8").nombreMedico("Dr. Vega").especialidad("Pediatria").fecha("2026-04-04").hora("12:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("9").nombrePaciente("Juan Perez").rutPaciente("12.345.678-9").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-05").hora("09:00").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("10").nombrePaciente("Ana Torres").rutPaciente("33.444.555-6").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-05").hora("10:00").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("11").nombrePaciente("Luis Herrera").rutPaciente("66.777.888-9").nombreMedico("Dr. Lopez").especialidad("Medicina General").fecha("2026-04-01").hora("09:15").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("12").nombrePaciente("Sofia Diaz").rutPaciente("77.888.999-0").nombreMedico("Dr. Lopez").especialidad("Medicina General").fecha("2026-04-01").hora("09:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("13").nombrePaciente("Pedro Castillo").rutPaciente("88.999.000-1").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-01").hora("10:15").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("14").nombrePaciente("Claudia Rios").rutPaciente("99.000.111-2").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-01").hora("10:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("15").nombrePaciente("Jorge Paredes").rutPaciente("10.111.222-3").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-02").hora("11:15").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("16").nombrePaciente("Valeria Mendez").rutPaciente("11.222.333-4").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-02").hora("11:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("17").nombrePaciente("Fernando Silva").rutPaciente("12.333.444-5").nombreMedico("Dr. Vega").especialidad("Pediatria").fecha("2026-04-02").hora("12:15").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("18").nombrePaciente("Daniela Torres").rutPaciente("13.444.555-6").nombreMedico("Dr. Vega").especialidad("Pediatria").fecha("2026-04-02").hora("12:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("19").nombrePaciente("Luis Herrera").rutPaciente("66.777.888-9").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-03").hora("09:45").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("20").nombrePaciente("Sofia Diaz").rutPaciente("77.888.999-0").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-03").hora("10:00").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("21").nombrePaciente("Pedro Castillo").rutPaciente("88.999.000-1").nombreMedico("Dr. Lopez").especialidad("Medicina General").fecha("2026-04-03").hora("10:45").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("22").nombrePaciente("Claudia Rios").rutPaciente("99.000.111-2").nombreMedico("Dr. Lopez").especialidad("Medicina General").fecha("2026-04-03").hora("11:00").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("23").nombrePaciente("Jorge Paredes").rutPaciente("10.111.222-3").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-04").hora("11:45").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("24").nombrePaciente("Valeria Mendez").rutPaciente("11.222.333-4").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-04").hora("12:00").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("25").nombrePaciente("Fernando Silva").rutPaciente("12.333.444-5").nombreMedico("Dr. Vega").especialidad("Pediatria").fecha("2026-04-04").hora("12:45").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("26").nombrePaciente("Daniela Torres").rutPaciente("13.444.555-6").nombreMedico("Dr. Vega").especialidad("Pediatria").fecha("2026-04-04").hora("13:00").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("27").nombrePaciente("Luis Herrera").rutPaciente("66.777.888-9").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-05").hora("09:15").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("28").nombrePaciente("Sofia Diaz").rutPaciente("77.888.999-0").nombreMedico("Dr. Soto").especialidad("Traumatologia").fecha("2026-04-05").hora("09:30").estado("PROGRAMADA").build());
-
-        citas.add(CitaResponseDTO.builder().id("29").nombrePaciente("Pedro Castillo").rutPaciente("88.999.000-1").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-05").hora("10:15").estado("PROGRAMADA").build());
-        citas.add(CitaResponseDTO.builder().id("30").nombrePaciente("Claudia Rios").rutPaciente("99.000.111-2").nombreMedico("Dr. Ramirez").especialidad("Dermatologia").fecha("2026-04-05").hora("10:30").estado("PROGRAMADA").build());
-
-	}
 
     public List<CitaResponseDTO> obtenerTodas() {
 
-		return citas;
-	}
+        return citaMedicaRepository.findAll().stream().map(this::toDTO).toList();
+    }
 
-    
-    
+
     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
 
+    // Buscar médico por RUT
+    MedicoEntity medico = medicoRepository.findByRut(request.getRutMedico())
+            .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
 
-    boolean medicoExiste = false;
-
-    for (CitaResponseDTO cita : citas) {
-        if (cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico())) {
-            medicoExiste = true;
-            break;
-        }
-    }
-
-    if (!medicoExiste) {
-        throw new RuntimeException("El medico ingresado no existe");
-    }
+    // Buscar paciente por RUT
+    PacienteEntity paciente = pacienteRepository.findByRut(request.getRutPaciente())
+            .orElseThrow(() -> new RuntimeException("El paciente ingresado no existe"));
 
     // convertir a minutos
-    String[] nuevaHoraSplit = request.getHora().split(":");
+    String[] nuevaHoraSplit = request.getHoraCita().split(":");
     int nuevaMin = Integer.parseInt(nuevaHoraSplit[0]) * 60 + Integer.parseInt(nuevaHoraSplit[1]);
 
     // horarios permitidos entre (09:00 a 18:00)
@@ -97,121 +69,195 @@ public class CitaService {
         throw new RuntimeException("Las citas solo pueden agendarse entre 09:00 y 18:00");
     }
 
-    // diferencia de 15 minutos minimo entre cada cita
-    for (CitaResponseDTO cita : citas) {
+    // diferencia de 15 minutos mínimo entre cada cita activa del mismo médico en la misma fecha
+    List<CitaMedicaEntity> citasExistentes = citaMedicaRepository.findByMedicoIdMedico(medico.getIdMedico());
+    for (CitaMedicaEntity cita : citasExistentes) {
+        boolean mismaFecha = cita.getFechaCita().equals(request.getFechaCita());
+        boolean activa = cita.getActiva() == 1;
 
-        boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico());
-        boolean mismaFecha = cita.getFecha().equals(request.getFecha());
-        boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
-
-        if (mismoMedico && mismaFecha && activa) {
-
-            String[] horaExistenteSplit = cita.getHora().split(":");
+        if (mismaFecha && activa) {
+            String[] horaExistenteSplit = cita.getHoraCita().split(":");
             int existenteMin = Integer.parseInt(horaExistenteSplit[0]) * 60 + Integer.parseInt(horaExistenteSplit[1]);
 
             int diferencia = Math.abs(nuevaMin - existenteMin);
 
             if (diferencia < 15) {
-                throw new RuntimeException("Debe existir al menos 15 minutos entre citas para el mismo medico");
+                throw new RuntimeException("Debe existir al menos 15 minutos entre citas para el mismo médico");
             }
         }
     }
 
-    int nuevoId = citas.size() + 1;
+    // Crear nueva cita
+    CitaMedicaEntity nuevaCita = new CitaMedicaEntity();
+    nuevaCita.setFechaCita(request.getFechaCita());
+    nuevaCita.setHoraCita(request.getHoraCita());
+    nuevaCita.setActiva(1); // por defecto activa
+    nuevaCita.setMedico(medico);
+    nuevaCita.setPaciente(paciente);
 
-    CitaResponseDTO nuevaCita = CitaResponseDTO.builder()
-            .id(String.valueOf(nuevoId))
-            .nombrePaciente(request.getNombrePaciente())
-            .rutPaciente(request.getRutPaciente())
-            .nombreMedico(request.getNombreMedico())
-            .especialidad(request.getEspecialidad())
-            .fecha(request.getFecha())
-            .hora(request.getHora())
-            .estado("PROGRAMADA")
-            .build();
+    
 
-    citas.add(nuevaCita);
-    return nuevaCita;
+    CitaMedicaEntity guardada = citaMedicaRepository.save(nuevaCita);
+
+    // Convertir a DTO
+    return new CitaResponseDTO(
+            guardada.getIdCita(),
+            guardada.getFechaCita(),
+            guardada.getHoraCita(),
+            guardada.getFechaEmision(),
+            guardada.getActiva(),
+            guardada.getMedico().getIdMedico(),
+            guardada.getPaciente().getIdPaciente()
+    );
 }
 
+  
 
-    //cancelar citas mediante nombre doc, fecha y hora
-    public CitaResponseDTO cancelar(String fecha, String hora, String nombreMedico) {
-
-    for (CitaResponseDTO cita : citas) {
-
-        boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
-        boolean mismaFecha = cita.getFecha().equals(fecha);
-        boolean mismaHora = cita.getHora().equals(hora);
-        boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
-
-        if (mismoMedico && mismaFecha && mismaHora && activa) {
-            cita.setEstado("CANCELADA");
-            return cita;
-        }
-    }
-
-    return null;
-    }
-
-//consultar la disponibilidad de un doc en un dia filtrando los horarios que ya tienen una cita programada
-
-    public List<String> consultarDisponibilidad(String nombreMedico, String fecha) {
-
-    // Validar formato de fecha
-    if (!fecha.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
-        throw new RuntimeException("La fecha debe tener formato yyyy-MM-dd");
-    }
-
-    // Validar que el médico exista
-    boolean medicoExiste = false;
-
-    for (CitaResponseDTO cita : citas) {
-        if (cita.getNombreMedico().equalsIgnoreCase(nombreMedico)) {
-            medicoExiste = true;
-            break;
-        }
-    }
-
-    if (!medicoExiste) {
-        throw new RuntimeException("El medico no existe");
-    }
+    
+    
+//     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
 
 
-    List<String> disponibles = new ArrayList<>();
+//     boolean medicoExiste = false;
 
-        int inicio = 9 * 60;   
-        int fin = 18 * 60;     
+//     for (CitaResponseDTO cita : citas) {
+//         if (cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico())) {
+//             medicoExiste = true;
+//             break;
+//         }
+//     }
 
-    for (int minuto = inicio; minuto <= fin; minuto += 15) {
+//     if (!medicoExiste) {
+//         throw new RuntimeException("El medico ingresado no existe");
+//     }
 
-        int hora = minuto / 60;
-        int min = minuto % 60;
+//     // convertir a minutos
+//     String[] nuevaHoraSplit = request.getHora().split(":");
+//     int nuevaMin = Integer.parseInt(nuevaHoraSplit[0]) * 60 + Integer.parseInt(nuevaHoraSplit[1]);
 
-        String horaFormateada = String.format("%02d:%02d", hora, min);
+//     // horarios permitidos entre (09:00 a 18:00)
+//     int inicio = 9 * 60;
+//     int fin = 18 * 60;
 
-        boolean ocupado = false;
+//     if (nuevaMin < inicio || nuevaMin > fin) {
+//         throw new RuntimeException("Las citas solo pueden agendarse entre 09:00 y 18:00");
+//     }
 
-        for (CitaResponseDTO cita : citas) {
+//     // diferencia de 15 minutos minimo entre cada cita
+//     for (CitaResponseDTO cita : citas) {
 
-            boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
-            boolean mismaFecha = cita.getFecha().equals(fecha);
-            boolean mismaHora = cita.getHora().equals(horaFormateada);
-            boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
+//         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(request.getNombreMedico());
+//         boolean mismaFecha = cita.getFecha().equals(request.getFecha());
+//         boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
 
-            if (mismoMedico && mismaFecha && mismaHora && activa) {
-                ocupado = true;
-                break;
-            }
-        }
+//         if (mismoMedico && mismaFecha && activa) {
 
-        if (!ocupado) {
-            disponibles.add(horaFormateada);
-        }
-    }
+//             String[] horaExistenteSplit = cita.getHora().split(":");
+//             int existenteMin = Integer.parseInt(horaExistenteSplit[0]) * 60 + Integer.parseInt(horaExistenteSplit[1]);
 
-         return disponibles;
-    }
+//             int diferencia = Math.abs(nuevaMin - existenteMin);
+
+//             if (diferencia < 15) {
+//                 throw new RuntimeException("Debe existir al menos 15 minutos entre citas para el mismo medico");
+//             }
+//         }
+//     }
+
+//     int nuevoId = citas.size() + 1;
+
+//     CitaResponseDTO nuevaCita = CitaResponseDTO.builder()
+//             .id(String.valueOf(nuevoId))
+//             .nombrePaciente(request.getNombrePaciente())
+//             .rutPaciente(request.getRutPaciente())
+//             .nombreMedico(request.getNombreMedico())
+//             .especialidad(request.getEspecialidad())
+//             .fecha(request.getFecha())
+//             .hora(request.getHora())
+//             .estado("PROGRAMADA")
+//             .build();
+
+//     citas.add(nuevaCita);
+//     return nuevaCita;
+// }
+
+
+//     //cancelar citas mediante nombre doc, fecha y hora
+//     public CitaResponseDTO cancelar(String fecha, String hora, String nombreMedico) {
+
+//     for (CitaResponseDTO cita : citas) {
+
+//         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
+//         boolean mismaFecha = cita.getFecha().equals(fecha);
+//         boolean mismaHora = cita.getHora().equals(hora);
+//         boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
+
+//         if (mismoMedico && mismaFecha && mismaHora && activa) {
+//             cita.setEstado("CANCELADA");
+//             return cita;
+//         }
+//     }
+
+//     return null;
+//     }
+
+// //consultar la disponibilidad de un doc en un dia filtrando los horarios que ya tienen una cita programada
+
+//     public List<String> consultarDisponibilidad(String nombreMedico, String fecha) {
+
+//     // Validar formato de fecha
+//     if (!fecha.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+//         throw new RuntimeException("La fecha debe tener formato yyyy-MM-dd");
+//     }
+
+//     // Validar que el médico exista
+//     boolean medicoExiste = false;
+
+//     for (CitaResponseDTO cita : citas) {
+//         if (cita.getNombreMedico().equalsIgnoreCase(nombreMedico)) {
+//             medicoExiste = true;
+//             break;
+//         }
+//     }
+
+//     if (!medicoExiste) {
+//         throw new RuntimeException("El medico no existe");
+//     }
+
+
+//     List<String> disponibles = new ArrayList<>();
+
+//         int inicio = 9 * 60;   
+//         int fin = 18 * 60;     
+
+//     for (int minuto = inicio; minuto <= fin; minuto += 15) {
+
+//         int hora = minuto / 60;
+//         int min = minuto % 60;
+
+//         String horaFormateada = String.format("%02d:%02d", hora, min);
+
+//         boolean ocupado = false;
+
+//         for (CitaResponseDTO cita : citas) {
+
+//             boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
+//             boolean mismaFecha = cita.getFecha().equals(fecha);
+//             boolean mismaHora = cita.getHora().equals(horaFormateada);
+//             boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
+
+//             if (mismoMedico && mismaFecha && mismaHora && activa) {
+//                 ocupado = true;
+//                 break;
+//             }
+//         }
+
+//         if (!ocupado) {
+//             disponibles.add(horaFormateada);
+//         }
+//     }
+
+//          return disponibles;
+//     }
 
 
 

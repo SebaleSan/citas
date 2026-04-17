@@ -1,6 +1,7 @@
 package com.semana2.citas.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,11 @@ public interface MedicoRepository extends JpaRepository<MedicoEntity, Long> {
     List<MedicoEntity> findByEspecialidad(String especialidad);
     List<MedicoEntity> findByNombreContaining(String nombre);
     MedicoEntity findByNombreAndApellido(String nombre, String apellido);
+
+    // @Query("SELECT m FROM MedicoEntity m WHERE m.rut = :rut")
+    // MedicoEntity findByRut(@Param("rut") String rut);
+
+    Optional<MedicoEntity> findByRut(String rut);
 
     @Query("SELECT m FROM MedicoEntity m WHERE m.idMedico = :idMedico")
     MedicoEntity findMedicoById(@Param("idMedico") Long idMedico);
