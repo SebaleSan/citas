@@ -54,6 +54,17 @@ public class CitaController {
 
 		return ResponseEntity.ok(service.obtenerTodas());
 	}
+
+	@GetMapping("/disponibilidad")
+    public ResponseEntity<List<String>> consultarDisponibilidad(
+            @RequestParam String rutMedico,
+            @RequestParam String fecha) {
+        List<String> disponibles = service.consultarDisponibilidad(rutMedico, fecha);
+        return ResponseEntity.ok(disponibles);
+    }
+
+
+
     
 //     @PutMapping("/cancelar")
 //     public ResponseEntity<?> cancelar(@RequestParam String fecha, @RequestParam String hora, @RequestParam String nombreMedico) {

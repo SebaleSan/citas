@@ -1,5 +1,7 @@
 package com.semana2.citas.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +89,7 @@ public class CitaService {
         }
     }
 
-    // Crear nueva cita
+ 
     CitaMedicaEntity nuevaCita = new CitaMedicaEntity();
     nuevaCita.setFechaCita(request.getFechaCita());
     nuevaCita.setHoraCita(request.getHoraCita());
@@ -99,7 +101,6 @@ public class CitaService {
 
     CitaMedicaEntity guardada = citaMedicaRepository.save(nuevaCita);
 
-    // Convertir a DTO
     return new CitaResponseDTO(
             guardada.getIdCita(),
             guardada.getFechaCita(),
@@ -200,64 +201,119 @@ public class CitaService {
 //     return null;
 //     }
 
-// //consultar la disponibilidad de un doc en un dia filtrando los horarios que ya tienen una cita programada
+//consultar la disponibilidad de un doc en un dia filtrando los horarios que ya tienen una cita programada
 
-//     public List<String> consultarDisponibilidad(String nombreMedico, String fecha) {
+    public List<String> consultarDisponibilidad(String rutMedico, String fecha) {
 
-//     // Validar formato de fecha
-//     if (!fecha.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
-//         throw new RuntimeException("La fecha debe tener formato yyyy-MM-dd");
-//     }
+    // Validar formato de fecha
+    if (!fecha.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
+        throw new RuntimeException("La fecha debe tener formato dd-MM-yyyy");
+    }
 
-//     // Validar que el médico exista
-//     boolean medicoExiste = false;
+    DateTimeFormatter entrada = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    DateTimeFormatter bd = DateTimeFormatter.ofPattern("dd/MM/yy");
 
-//     for (CitaResponseDTO cita : citas) {
-//         if (cita.getNombreMedico().equalsIgnoreCase(nombreMedico)) {
-//             medicoExiste = true;
-//             break;
-//         }
-//     }
+    String fechaConvertida = LocalDate.parse(fecha, entrada).format(bd);
 
-//     if (!medicoExiste) {
-//         throw new RuntimeException("El medico no existe");
-//     }
+    // Buscar médico por RUT
+    MedicoEntity medico = medicoRepository.findByRut(rutMedico)
+            .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
+
+    // Obtener todas las citas activas del médico en esa fecha
+     List<CitaMedicaEntity> citasExistentes = citaMedicaRepository
+            .findByMedicoAndFechaCitaAndActiva(medico, fechaConvertida, 1);
+
+    List<String> disponibles = new ArrayList<>();
+
+    int inicio = 9 * 60;   // 09:00
+    int fin = 18 * 60;     // 18:00
+
+    for (int minuto = inicio; minuto <= fin; minuto += 15) {
+        int hora = minuto / 60;
+        int min = minuto % 60;
+
+        String horaFormateada = String.format("%02d:%02d", hora, min);
+
+        boolean ocupado = false;
+
+        for (CitaMedicaEntity cita : citasExistentes) {
+            boolean mismaHora = cita.getHoraCita().equals(horaFormateada);
+
+            if (mismaHora) {
+                ocupado = true;
+                break;
+            }
+        }
+
+        if (!ocupado) {
+            disponibles.add(horaFormateada);
+        }
+    }
+
+    return disponibles;
+}
 
 
-//     List<String> disponibles = new ArrayList<>();
 
-//         int inicio = 9 * 60;   
-//         int fin = 18 * 60;     
 
-//     for (int minuto = inicio; minuto <= fin; minuto += 15) {
 
-//         int hora = minuto / 60;
-//         int min = minuto % 60;
 
-//         String horaFormateada = String.format("%02d:%02d", hora, min);
+    // public List<String> consultarDisponibilidad(String nombreMedico, String fecha) {
 
-//         boolean ocupado = false;
+    // // Validar formato de fecha
+    // if (!fecha.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+    //     throw new RuntimeException("La fecha debe tener formato yyyy-MM-dd");
+    // }
 
-//         for (CitaResponseDTO cita : citas) {
+    // // Validar que el médico exista
+    // boolean medicoExiste = false;
 
-//             boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
-//             boolean mismaFecha = cita.getFecha().equals(fecha);
-//             boolean mismaHora = cita.getHora().equals(horaFormateada);
-//             boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
+    // for (CitaResponseDTO cita : citas) {
+    //     if (cita.getNombreMedico().equalsIgnoreCase(nombreMedico)) {
+    //         medicoExiste = true;
+    //         break;
+    //     }
+    // }
 
-//             if (mismoMedico && mismaFecha && mismaHora && activa) {
-//                 ocupado = true;
-//                 break;
-//             }
-//         }
+    // if (!medicoExiste) {
+    //     throw new RuntimeException("El medico no existe");
+    // }
 
-//         if (!ocupado) {
-//             disponibles.add(horaFormateada);
-//         }
-//     }
 
-//          return disponibles;
-//     }
+    // List<String> disponibles = new ArrayList<>();
+
+    //     int inicio = 9 * 60;   
+    //     int fin = 18 * 60;     
+
+    // for (int minuto = inicio; minuto <= fin; minuto += 15) {
+
+    //     int hora = minuto / 60;
+    //     int min = minuto % 60;
+
+    //     String horaFormateada = String.format("%02d:%02d", hora, min);
+
+    //     boolean ocupado = false;
+
+    //     for (CitaResponseDTO cita : citas) {
+
+    //         boolean mismoMedico = cita.getNombreMedico().equalsIgnoreCase(nombreMedico);
+    //         boolean mismaFecha = cita.getFecha().equals(fecha);
+    //         boolean mismaHora = cita.getHora().equals(horaFormateada);
+    //         boolean activa = cita.getEstado().equalsIgnoreCase("PROGRAMADA");
+
+    //         if (mismoMedico && mismaFecha && mismaHora && activa) {
+    //             ocupado = true;
+    //             break;
+    //         }
+    //     }
+
+    //     if (!ocupado) {
+    //         disponibles.add(horaFormateada);
+    //     }
+    // }
+
+    //      return disponibles;
+    // }
 
 
 

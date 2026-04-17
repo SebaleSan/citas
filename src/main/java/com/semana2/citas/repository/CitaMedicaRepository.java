@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.semana2.citas.entity.CitaMedicaEntity;
+import com.semana2.citas.entity.MedicoEntity;
 
 public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Long> {
     
@@ -32,6 +33,7 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Lo
 
      @Query("SELECT o FROM CitaMedicaEntity o WHERE o.fechaEmision = :fechaEmision")
     List<CitaMedicaEntity> findOrdenesMedicasByFechaEmision(@Param("fechaEmision") String fechaEmision);
+     List<CitaMedicaEntity> findByMedicoAndFechaCitaAndActiva(MedicoEntity medico, String fechaCita, Integer activa);
 
 
 }
