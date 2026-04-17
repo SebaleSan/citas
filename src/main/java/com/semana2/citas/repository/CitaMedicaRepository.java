@@ -44,6 +44,16 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Lo
         Integer activa
     );
 
+     Optional<CitaMedicaEntity> findByMedicoAndFechaCitaAndHoraCita(
+        MedicoEntity medico,
+        LocalDate fecha,
+        String hora
+    );
+
+
+    
+
+
 
 
 }

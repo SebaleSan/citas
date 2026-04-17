@@ -39,8 +39,9 @@ public class CitaService {
             citaMedica.getHoraCita(),
             citaMedica.getFechaEmision(),
             citaMedica.getActiva(),
-            citaMedica.getMedico().getIdMedico(),
-            citaMedica.getPaciente().getIdPaciente()
+            citaMedica.getMedico().getRut(),
+            citaMedica.getPaciente().getRut(),
+            citaMedica.getMedico().getEspecialidad()
         );
     }
 
@@ -107,8 +108,9 @@ public class CitaService {
             guardada.getFechaCita(),             guardada.getHoraCita(),
             guardada.getFechaEmision(),
             guardada.getActiva(),
-            guardada.getMedico().getIdMedico(),
-            guardada.getPaciente().getIdPaciente()
+            guardada.getMedico().getRut(),
+            guardada.getPaciente().getRut(),
+            guardada.getMedico().getEspecialidad()
     );
 }
 
@@ -127,7 +129,7 @@ public class CitaService {
 
     LocalDate fechaNormalizada = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
-    // Buscar médico por RUT
+    //Comprobacion de existencia del médico
     MedicoEntity medico = medicoRepository.findByRut(rutMedico)
             .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
 
@@ -165,7 +167,7 @@ public class CitaService {
     return disponibles;
 }
 
-
+// Cancelar una cita médica (cambiar estado activa = 0)
     @Transactional
     public CitaResponseDTO cancelar(LocalDate fecha, String hora, String rutMedico) {
 
@@ -185,10 +187,23 @@ public class CitaService {
                 cita.getHoraCita(),
                 cita.getFechaEmision(),
                 cita.getActiva(),
-                cita.getMedico().getIdMedico(),
-                cita.getPaciente().getIdPaciente()
+                cita.getMedico().getRut(),
+                cita.getPaciente().getRut(),
+                cita.getMedico().getEspecialidad()
         );
     }
+
+	public void eliminar(LocalDate fechaNormalizada, String hora, String rutMedico) {
+		
+        MedicoEntity medico = medicoRepository.findByRut(rutMedico)
+                .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
+
+        CitaMedicaEntity cita = citaMedicaRepository
+                .findByMedicoAndFechaCitaAndHoraCita(medico, fechaNormalizada, hora)
+                .orElseThrow(() -> new RuntimeException("No existe una cita con esos datos"));
+
+        citaMedicaRepository.delete(cita);
+	}
 
 
 

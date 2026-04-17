@@ -28,9 +28,9 @@ public class CrearCitaRequestDTO {
     @Pattern(regexp = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$", message = "La hora debe estar en formato HH:mm")
     private String horaCita;
 
-    @NotNull(message = "El ID del médico es obligatorio")
+    @NotNull(message = "El rut del médico es obligatorio")
     private String rutMedico;
 
-    @NotNull(message = "El ID del paciente es obligatorio")
+    @NotNull(message = "El rut del paciente es obligatorio")
     private String rutPaciente;
 }

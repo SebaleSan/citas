@@ -43,4 +43,9 @@ public interface MedicoRepository extends JpaRepository<MedicoEntity, Long> {
     @Query("SELECT m FROM MedicoEntity m WHERE m.apellido = :apellido AND m.nombre LIKE %:apellido%")
     List<MedicoEntity> findMedicosByApellido(@Param("apellido") String apellido);
 
-}
+
+    
+    
+   
+
+  }

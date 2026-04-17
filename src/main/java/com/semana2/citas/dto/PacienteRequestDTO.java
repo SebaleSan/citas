@@ -20,6 +20,6 @@ public class PacienteRequestDTO {
     private String apellido;
 
     @NotNull(message = "La edad es obligatoria")
-    @Min(value = 0, message = "La edad no puede ser negativa")
+    @Min(value = 1, message = "La edad no puede ser negativa o 0")
     private Integer edad;
 }

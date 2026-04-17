@@ -16,7 +16,8 @@ public class CitaResponseDTO {
    private String horaCita;
    private String fechaEmision;
    private Integer activa;
-   private Long medico;
-   private Long paciente;
+   private String rutMedico;
+   private String rutPaciente;
+   private String especialidadMedico;
     
 }

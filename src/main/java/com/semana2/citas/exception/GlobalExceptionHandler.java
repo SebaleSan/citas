@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,6 +33,18 @@ public class GlobalExceptionHandler {
 		response.put("errores", errores);
 
 		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("timestamp", LocalDateTime.now());
+		response.put("status", HttpStatus.CONFLICT.value());
+		response.put("mensaje", "Violación de integridad de datos");
+		response.put("detalle", "Los datos que intenta ingresar ya existen o violan una restricción única en la base de datos");
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -61,4 +74,6 @@ public class GlobalExceptionHandler {
         error.put("detalle", "La fecha debe enviarse en formato dd-MM-yyyy");
         return ResponseEntity.badRequest().body(error);
     }
+
+	
 }

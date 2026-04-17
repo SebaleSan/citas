@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.semana2.citas.entity.MedicoEntity;
 import com.semana2.citas.entity.PacienteEntity;
 
 public interface PacienteRepository extends JpaRepository<PacienteEntity, Long> {
