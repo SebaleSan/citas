@@ -44,7 +44,6 @@ public class CitaMedicaEntity {
 
 
 
-
     @Column(name = "activa", nullable = false)
     private Integer activa;
 
