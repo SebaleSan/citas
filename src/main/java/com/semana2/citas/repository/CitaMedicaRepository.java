@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.semana2.citas.entity.CitaMedicaEntity;
 import com.semana2.citas.entity.MedicoEntity;
+import com.semana2.citas.entity.PacienteEntity;
 
 public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Long> {
     
@@ -46,6 +47,19 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Lo
 
      Optional<CitaMedicaEntity> findByMedicoAndFechaCitaAndHoraCita(
         MedicoEntity medico,
+        LocalDate fecha,
+        String hora
+    );
+
+     Optional<CitaMedicaEntity> findByPacienteAndFechaCitaAndHoraCitaAndActiva(
+        PacienteEntity paciente,
+        LocalDate fecha,
+        String hora,
+        Integer activa
+    );
+
+     Optional<CitaMedicaEntity> findByPacienteAndFechaCitaAndHoraCita(
+        PacienteEntity paciente,
         LocalDate fecha,
         String hora
     );

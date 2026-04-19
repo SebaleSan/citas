@@ -167,15 +167,50 @@ public class CitaService {
     return disponibles;
 }
 
+    private LocalDate parseFecha(String fecha) {
+        String fechaTrim = fecha.trim();
+
+        if (fechaTrim.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
+            return LocalDate.parse(fechaTrim, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        }
+        if (fechaTrim.matches("^\\d{2}/\\d{2}/\\d{2}$")) {
+            return LocalDate.parse(fechaTrim, DateTimeFormatter.ofPattern("dd/MM/yy"));
+        }
+        if (fechaTrim.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+            return LocalDate.parse(fechaTrim, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
+        throw new RuntimeException("La fecha debe tener formato dd-MM-yyyy, dd/MM/yy o dd/MM/yyyy");
+    }
+
+    private String normalizeHora(String hora) {
+        String horaTrim = hora.trim();
+        if (!horaTrim.matches("^\\d{1,2}:\\d{1,2}$")) {
+            throw new RuntimeException("La hora debe tener formato HH:mm o H:mm");
+        }
+
+        String[] parts = horaTrim.split(":");
+        int horaNumero = Integer.parseInt(parts[0]);
+        int minutos = Integer.parseInt(parts[1]);
+
+        if (horaNumero < 0 || horaNumero > 23 || minutos < 0 || minutos > 59) {
+            throw new RuntimeException("La hora debe ser válida entre 00:00 y 23:59");
+        }
+
+        return String.format("%02d:%02d", horaNumero, minutos);
+    }
+
 // Cancelar una cita médica (cambiar estado activa = 0)
     @Transactional
-    public CitaResponseDTO cancelar(LocalDate fecha, String hora, String rutMedico) {
+    public CitaResponseDTO cancelar(String fecha, String hora, String rutPaciente) {
 
-        MedicoEntity medico = medicoRepository.findByRut(rutMedico)
-                .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
+        LocalDate fechaNormalizada = parseFecha(fecha);
+        String horaNormalizada = normalizeHora(hora);
+
+        PacienteEntity paciente = pacienteRepository.findByRut(rutPaciente)
+                .orElseThrow(() -> new RuntimeException("El paciente ingresado no existe"));
 
         CitaMedicaEntity cita = citaMedicaRepository
-                .findByMedicoAndFechaCitaAndHoraCitaAndActiva(medico, fecha, hora, 1)
+                .findByPacienteAndFechaCitaAndHoraCitaAndActiva(paciente, fechaNormalizada, horaNormalizada, 1)
                 .orElseThrow(() -> new RuntimeException("No existe una cita programada con esos datos"));
 
         cita.setActiva(0);
@@ -193,13 +228,15 @@ public class CitaService {
         );
     }
 
-	public void eliminar(LocalDate fechaNormalizada, String hora, String rutMedico) {
-		
-        MedicoEntity medico = medicoRepository.findByRut(rutMedico)
-                .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
+	public void eliminar(String fecha, String hora, String rutPaciente) {
+		LocalDate fechaNormalizada = parseFecha(fecha);
+        String horaNormalizada = normalizeHora(hora);
+
+        PacienteEntity paciente = pacienteRepository.findByRut(rutPaciente)
+                .orElseThrow(() -> new RuntimeException("El paciente ingresado no existe"));
 
         CitaMedicaEntity cita = citaMedicaRepository
-                .findByMedicoAndFechaCitaAndHoraCita(medico, fechaNormalizada, hora)
+                .findByPacienteAndFechaCitaAndHoraCita(paciente, fechaNormalizada, horaNormalizada)
                 .orElseThrow(() -> new RuntimeException("No existe una cita con esos datos"));
 
         citaMedicaRepository.delete(cita);

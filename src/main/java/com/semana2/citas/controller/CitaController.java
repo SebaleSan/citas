@@ -1,7 +1,5 @@
 package com.semana2.citas.controller;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -62,60 +60,43 @@ public class CitaController {
     
 	@PutMapping("/cancelar")
 	public ResponseEntity<?> cancelar(@RequestParam String fecha,
-                                  @RequestParam String hora,
-                                  @RequestParam String rutMedico) {
+						  @RequestParam String hora,
+						  @RequestParam String rutPaciente) {
 
 		try {
-		
-			if (!fecha.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
-				return ResponseEntity.badRequest().body("La fecha debe tener formato dd-MM-yyyy");
+			if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}|\\d{2}/\\d{2}/\\d{2}|\\d{2}/\\d{2}/\\d{4})$")) {
+				return ResponseEntity.badRequest().body("La fecha debe tener formato dd-MM-yyyy, dd/MM/yy o dd/MM/yyyy");
 			}
 
-			LocalDate fechaNormalizada = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-			CitaResponseDTO cancelada = service.cancelar(fechaNormalizada, hora, rutMedico);
-
+			CitaResponseDTO cancelada = service.cancelar(fecha, hora, rutPaciente);
 			return ResponseEntity.ok(cancelada);
 
 		} catch (RuntimeException ex) {
 			return ResponseEntity.status(404)
-					.body("No se encontró una cita PROGRAMADA para el médico con RUT " + rutMedico +
-							" en la fecha " + fecha + " en el horario " + hora);
+					.body("No se encontró una cita PROGRAMADA para el paciente con RUT " + rutPaciente +
+						" en la fecha " + fecha + " en el horario " + hora);
 		}
 	}
 
-
 	@DeleteMapping("/eliminar")
 	public ResponseEntity<?> eliminar(@RequestParam String fecha,
-								  @RequestParam String hora,
-								  @RequestParam String rutMedico) {
+						  @RequestParam String hora,
+						  @RequestParam String rutPaciente) {
 
 		try {
-		
-			if (!fecha.matches("^\\d{2}-\\d{2}-\\d{4}$")) {
-				return ResponseEntity.badRequest().body("La fecha debe tener formato dd-MM-yyyy");
+			if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}|\\d{2}/\\d{2}/\\d{2}|\\d{2}/\\d{2}/\\d{4})$")) {
+				return ResponseEntity.badRequest().body("La fecha debe tener formato dd-MM-yyyy, dd/MM/yy o dd/MM/yyyy");
 			}
 
-			LocalDate fechaNormalizada = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-			service.eliminar(fechaNormalizada, hora, rutMedico);
-
+			service.eliminar(fecha, hora, rutPaciente);
 			return ResponseEntity.ok("Cita eliminada exitosamente");
 
 		} catch (RuntimeException ex) {
 			return ResponseEntity.status(404)
-					.body("No se encontró una cita PROGRAMADA para el médico con RUT " + rutMedico +
-							" en la fecha " + fecha + " en el horario " + hora);
+					.body("No se encontró una cita PROGRAMADA para el paciente con RUT " + rutPaciente +
+						" en la fecha " + fecha + " en el horario " + hora);
 		}
 	}
-
-
-
-
-
-
-
-
 }
 
-
+								  
