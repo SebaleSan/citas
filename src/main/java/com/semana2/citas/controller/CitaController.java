@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.semana2.citas.dto.CitaResponseDTO;
 import com.semana2.citas.dto.CrearCitaRequestDTO;
 import com.semana2.citas.service.CitaService;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 import jakarta.validation.Valid;
@@ -44,7 +46,8 @@ public class CitaController {
 
     @GetMapping
 	public ResponseEntity<List<CitaResponseDTO>> obtenerTodas() {
-
+		List<CitaResponseDTO> citas = service.obtenerTodas();
+		citas.forEach(this::agregarLinks);
 		return ResponseEntity.ok(service.obtenerTodas());
 	}
 
@@ -98,6 +101,18 @@ public class CitaController {
 						" en la fecha " + fecha + " en el horario " + hora);
 		}
 	}
+
+
+	private void agregarLinks(CitaResponseDTO citas) {
+		citas.add(linkTo(methodOn(CitaController.class).obtenerTodas()).withRel("citas"));
+		citas.add(linkTo(methodOn(CitaController.class).consultarDisponibilidad(citas.getRutMedico(), citas.getFechaCita().toString())).withRel("disponibilidad-medico"));
+	}
+
+
+
+
+
+
 }
 
 								  

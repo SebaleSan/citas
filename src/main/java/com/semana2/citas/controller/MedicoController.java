@@ -1,7 +1,8 @@
 package com.semana2.citas.controller;
 
 import java.util.List;
-
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,8 @@ public class MedicoController {
     
     @GetMapping
     public ResponseEntity<List<MedicoResponseDTO>> obtenerTodos() {
+        List<MedicoResponseDTO> medicos = medicoService.obtenerTodos();
+        medicos.forEach(this::agregarLinks);
         return ResponseEntity.ok(medicoService.obtenerTodos());
     }
 
@@ -38,8 +41,15 @@ public class MedicoController {
     public ResponseEntity<MedicoResponseDTO> crearMedico(@Valid @RequestBody MedicoRequestDTO medicoRequest) {
         MedicoResponseDTO medicoCreado = medicoService.crearMedico(medicoRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(medicoCreado);
-    } 
+    }
 
+
+    private void agregarLinks(MedicoResponseDTO medico) {
+        medico.add(linkTo(methodOn(MedicoController.class).obtenerTodos()).withRel("medicos"));
+    }
+
+    
+    
    
     
     

@@ -16,6 +16,7 @@ import com.semana2.citas.repository.CitaMedicaRepository;
 import com.semana2.citas.repository.MedicoRepository;
 import com.semana2.citas.repository.PacienteRepository;
 
+
 import jakarta.transaction.Transactional;
 
 @Service
@@ -39,10 +40,9 @@ public class CitaService {
             citaMedica.getHoraCita(),
             citaMedica.getFechaEmision(),
             citaMedica.getActiva(),
-            citaMedica.getMedico().getRut(),
-            citaMedica.getPaciente().getRut(),
-            citaMedica.getMedico().getEspecialidad()
-        );
+            citaMedica.getMedico() != null ? citaMedica.getMedico().getRut() : null,
+            citaMedica.getPaciente() != null ? citaMedica.getPaciente().getRut() : null,
+            citaMedica.getMedico() != null ? citaMedica.getMedico().getEspecialidad() : null);
     }
 
 
