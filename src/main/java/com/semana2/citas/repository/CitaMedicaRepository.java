@@ -66,6 +66,10 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedicaEntity, Lo
         String hora
     );
 
+    Optional<CitaMedicaEntity> findByPacienteRut(String rutPaciente);
+    Optional<CitaMedicaEntity> findByMedicoRut(String rutMedico);
+
+
 
     
 

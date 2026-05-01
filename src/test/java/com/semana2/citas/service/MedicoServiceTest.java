@@ -71,6 +71,21 @@ class MedicoServiceTest {
 
     }
 
+    @Test
+    @DisplayName("Deberia crear medico")
+    void deberiaCrearMedico()
+    {
+        when(medicoRepository.save(any(MedicoEntity.class))).thenReturn(medicoEntity);
+
+        MedicoResponseDTO medicoCreado = medicoService.crearMedico(medicoRequestDTO);
+
+        assertNotNull(medicoCreado);
+        assertEquals("Juan", medicoCreado.getNombre());
+        assertEquals("Cardiologo", medicoCreado.getEspecialidad());
+        assertEquals("12345678-9", medicoCreado.getRut());
+        verify(medicoRepository, times(1)).save(any(MedicoEntity.class));
+    }
+
     
 
 }
