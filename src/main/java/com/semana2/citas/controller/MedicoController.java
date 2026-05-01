@@ -6,7 +6,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,9 +32,10 @@ public class MedicoController {
     
     @GetMapping
     public ResponseEntity<List<MedicoResponseDTO>> obtenerTodos() {
+
         List<MedicoResponseDTO> medicos = medicoService.obtenerTodos();
         medicos.forEach(this::agregarLinks);
-        return ResponseEntity.ok(medicoService.obtenerTodos());
+        return ResponseEntity.ok(medicos);
     }
 
     @PostMapping
@@ -44,10 +45,35 @@ public class MedicoController {
     }
 
 
-    private void agregarLinks(MedicoResponseDTO medico) {
-        medico.add(linkTo(methodOn(MedicoController.class).obtenerTodos()).withRel("medicos"));
-    }
+    
+    @GetMapping("/{id}")
+	public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
 
+		MedicoResponseDTO medico = medicoService.obtenerPorId(id);
+
+		if (medico == null) {
+
+			return ResponseEntity.notFound().build();
+		}
+
+		agregarLinks(medico);
+		return ResponseEntity.ok(medico);
+	}
+
+    private void agregarLinks(MedicoResponseDTO medico) {
+
+        medico.add(linkTo(methodOn(MedicoController.class)
+          .obtenerTodos())
+          .withSelfRel());
+       
+        medico.add(linkTo(methodOn(PacienteController.class)
+            .obtenerTodos())
+            .withRel("medicos"));
+
+        medico.add(linkTo(methodOn(MedicoController.class)
+            .crearMedico(null))
+            .withRel("crear"));
+    }
     
     
    

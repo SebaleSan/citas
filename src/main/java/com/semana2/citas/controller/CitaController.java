@@ -48,7 +48,7 @@ public class CitaController {
 	public ResponseEntity<List<CitaResponseDTO>> obtenerTodas() {
 		List<CitaResponseDTO> citas = service.obtenerTodas();
 		citas.forEach(this::agregarLinks);
-		return ResponseEntity.ok(service.obtenerTodas());
+		return ResponseEntity.ok(citas);
 	}
 
 	@GetMapping("/disponibilidad")
@@ -104,8 +104,28 @@ public class CitaController {
 
 
 	private void agregarLinks(CitaResponseDTO citas) {
-		citas.add(linkTo(methodOn(CitaController.class).obtenerTodas()).withRel("citas"));
-		citas.add(linkTo(methodOn(CitaController.class).consultarDisponibilidad(citas.getRutMedico(), citas.getFechaCita().toString())).withRel("disponibilidad-medico"));
+		
+
+		citas.add(linkTo(methodOn(CitaController.class)
+            .obtenerTodas()) 
+            .withSelfRel());
+
+    
+        citas.add(linkTo(methodOn(CitaController.class)
+            .obtenerTodas())
+            .withRel("citas"));
+
+    
+        citas.add(linkTo(methodOn(CitaController.class)
+            .crear(null))
+            .withRel("crear"));
+
+
+		citas.add(linkTo(methodOn(CitaController.class)
+		.eliminar(null, null, null))
+	    .withRel("eliminar"));
+
+		
 	}
 
 

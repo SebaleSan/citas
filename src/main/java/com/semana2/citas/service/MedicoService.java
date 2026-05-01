@@ -1,11 +1,14 @@
 package com.semana2.citas.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.semana2.citas.dto.MedicoResponseDTO;
+import com.semana2.citas.dto.PacienteResponseDTO;
 import com.semana2.citas.entity.MedicoEntity;
+import com.semana2.citas.entity.PacienteEntity;
 import com.semana2.citas.repository.MedicoRepository;
 import com.semana2.citas.dto.MedicoRequestDTO;
 
@@ -33,6 +36,12 @@ public class MedicoService {
             medico.getEspecialidad()
         );
     }
+
+    public MedicoResponseDTO obtenerPorId(Long id) {
+
+		Optional<MedicoEntity> medico = medicoRepository.findById(id);
+		return medico.map(this::toDTO).orElse(null);
+	}
 
 
     public MedicoResponseDTO crearMedico(MedicoRequestDTO medicoRequest) {

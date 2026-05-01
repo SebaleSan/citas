@@ -1,6 +1,7 @@
 package com.semana2.citas.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,14 @@ public class PacienteService {
 		PacienteEntity pacienteGuardado = pacienteRepository.save(paciente);
 		return toDTO(pacienteGuardado);
 	}
+
+    public PacienteResponseDTO obtenerPorId(Long id) {
+
+		Optional<PacienteEntity> paciente = pacienteRepository.findById(id);
+		return paciente.map(this::toDTO).orElse(null);
+	}
+
+
 
     
     
