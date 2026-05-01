@@ -6,9 +6,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.semana2.citas.entity.PacienteEntity;
 
+@Repository
 public interface PacienteRepository extends JpaRepository<PacienteEntity, Long> {
 
     List<PacienteEntity> findByNombreContaining(String nombre);
@@ -38,6 +40,6 @@ public interface PacienteRepository extends JpaRepository<PacienteEntity, Long> 
     @Query("SELECT p FROM PacienteEntity p WHERE p.edad >= :edad")
     List<PacienteEntity> findPacientesByEdadGreaterThanEqual(@Param("edad") Integer edad);
 
-    
+
     
 }
