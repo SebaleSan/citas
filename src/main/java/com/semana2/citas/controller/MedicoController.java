@@ -66,13 +66,12 @@ public class MedicoController {
           .obtenerTodos())
           .withSelfRel());
        
-        medico.add(linkTo(methodOn(PacienteController.class)
-            .obtenerTodos())
-            .withRel("medicos"));
 
         medico.add(linkTo(methodOn(MedicoController.class)
             .crearMedico(null))
             .withRel("crear"));
+
+        medico.add(linkTo(methodOn(MedicoController.class).obtenerPorId(medico.getIdMedico())).withSelfRel());
     }
     
     

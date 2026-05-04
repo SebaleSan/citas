@@ -103,30 +103,47 @@ public class CitaController {
 	}
 
 
-	private void agregarLinks(CitaResponseDTO citas) {
-		
 
-		citas.add(linkTo(methodOn(CitaController.class)
-            .obtenerTodas()) 
-            .withSelfRel());
+
+	private void agregarLinks(CitaResponseDTO cita) {
+
+
+  
+    cita.add(linkTo(methodOn(CitaController.class)
+        .obtenerTodas())
+        .withRel("citas"));
+
+   
+    cita.add(linkTo(methodOn(CitaController.class)
+        .crear(null)) // null porque solo necesitas la firma
+        .withRel("crear"));
+
+    cita.add(linkTo(methodOn(CitaController.class)
+        .cancelar(
+            cita.getFechaCita().toString(),
+            cita.getHoraCita(),
+            cita.getRutPaciente()
+        ))
+        .withRel("cancelar"));
 
     
-        citas.add(linkTo(methodOn(CitaController.class)
-            .obtenerTodas())
-            .withRel("citas"));
+    cita.add(linkTo(methodOn(CitaController.class)
+        .eliminar(
+            cita.getFechaCita().toString(),
+            cita.getHoraCita(),
+            cita.getRutPaciente()
+        ))
+        .withRel("eliminar"));
 
     
-        citas.add(linkTo(methodOn(CitaController.class)
-            .crear(null))
-            .withRel("crear"));
+    cita.add(linkTo(methodOn(CitaController.class)
+        .consultarDisponibilidad(
+            cita.getRutMedico(),
+            cita.getFechaCita().toString()
+        ))
+        .withRel("disponibilidad"));
+}
 
-
-		citas.add(linkTo(methodOn(CitaController.class)
-		.eliminar(null, null, null))
-	    .withRel("eliminar"));
-
-		
-	}
 
 
 

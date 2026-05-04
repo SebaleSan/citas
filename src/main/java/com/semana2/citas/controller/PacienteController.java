@@ -68,6 +68,9 @@ public class PacienteController {
             .obtenerTodos()) 
             .withSelfRel());
 
+        paciente.add(linkTo(methodOn(PacienteController.class).obtenerPorId(paciente.getIdPaciente())).withSelfRel());
+    
+
     
         paciente.add(linkTo(methodOn(PacienteController.class)
             .obtenerTodos())
