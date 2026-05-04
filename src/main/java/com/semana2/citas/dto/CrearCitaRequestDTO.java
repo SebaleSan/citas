@@ -19,9 +19,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CrearCitaRequestDTO {
 
-    @Future(message = "La fecha de la cita debe ser futura")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate fechaCita;
+    
+    private String fechaCita;
 
 
     @NotBlank(message = "La hora de la cita es obligatoria")

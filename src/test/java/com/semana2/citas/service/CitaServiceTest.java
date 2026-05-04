@@ -53,8 +53,8 @@ class CitaServiceTest {
     
 
 
-    @BeforeEach
-    void setUp() {
+   @BeforeEach
+        void setUp() {
         medicoEntity = new MedicoEntity();
         medicoEntity.setIdMedico(1L);
         medicoEntity.setNombre("Juan");
@@ -68,18 +68,17 @@ class CitaServiceTest {
         pacienteEntity.setApellido("Gonzalez");
         pacienteEntity.setRut("98765432-1");
         pacienteEntity.setEdad(30);
-        
 
         citaMedicaEntity = new CitaMedicaEntity();
         citaMedicaEntity.setIdCita(1L);
-        citaMedicaEntity.setFechaCita(LocalDate.parse("2023-10-26"));
+        citaMedicaEntity.setFechaCita(LocalDate.parse("2023-10-26")); // la entidad sigue usando LocalDate
         citaMedicaEntity.setHoraCita("10:00");
         citaMedicaEntity.setMedico(medicoEntity);
         citaMedicaEntity.setPaciente(pacienteEntity);
         citaMedicaEntity.setActiva(1);
 
         crearCitaRequestDTO = new CrearCitaRequestDTO();
-        crearCitaRequestDTO.setFechaCita(LocalDate.parse("2023-10-26"));
+        crearCitaRequestDTO.setFechaCita("26-10-2023"); // ahora String, probado con dd-MM-yyyy
         crearCitaRequestDTO.setHoraCita("10:00");
         crearCitaRequestDTO.setRutMedico("12345678-9");
         crearCitaRequestDTO.setRutPaciente("98765432-1");
@@ -112,14 +111,12 @@ class CitaServiceTest {
 
     @Test
     @DisplayName("Deberia crear cita")
-    void deberiaCrearCita()
-    {
+        void deberiaCrearCita() {
         when(medicoRepository.findByRut("12345678-9")).thenReturn(Optional.of(medicoEntity));
         when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
         when(citaMedicaRepository.findByMedicoIdMedico(1L)).thenReturn(Collections.emptyList());
         when(citaMedicaRepository.save(any(CitaMedicaEntity.class))).thenReturn(citaMedicaEntity);
 
-    
         CitaResponseDTO citaCreada = citaService.crear(crearCitaRequestDTO);
 
         assertNotNull(citaCreada);
@@ -128,9 +125,8 @@ class CitaServiceTest {
         assertEquals("12345678-9", citaCreada.getRutMedico());
         assertEquals("98765432-1", citaCreada.getRutPaciente());
         verify(citaMedicaRepository, times(1)).save(any(CitaMedicaEntity.class));
+}
 
-
-    }
 
 
 }

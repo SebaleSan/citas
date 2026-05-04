@@ -6,9 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.semana2.citas.dto.MedicoResponseDTO;
-import com.semana2.citas.dto.PacienteResponseDTO;
 import com.semana2.citas.entity.MedicoEntity;
-import com.semana2.citas.entity.PacienteEntity;
+
 import com.semana2.citas.repository.MedicoRepository;
 import com.semana2.citas.dto.MedicoRequestDTO;
 

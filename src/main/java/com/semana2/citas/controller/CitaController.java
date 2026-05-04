@@ -51,13 +51,40 @@ public class CitaController {
 		return ResponseEntity.ok(citas);
 	}
 
-	@GetMapping("/disponibilidad")
-    public ResponseEntity<List<String>> consultarDisponibilidad(
-            @RequestParam String rutMedico,
-            @RequestParam String fecha) {
-        List<String> disponibles = service.consultarDisponibilidad(rutMedico, fecha);
-        return ResponseEntity.ok(disponibles);
+	// @GetMapping("/disponibilidad")
+    // public ResponseEntity<List<String>> consultarDisponibilidad(
+    //         @RequestParam String rutMedico,
+    //         @RequestParam String fecha) {
+
+                
+
+                
+    //     List<String> disponibles = service.consultarDisponibilidad(rutMedico, fecha);
+    //     return ResponseEntity.ok(disponibles);
+    // }
+
+    @GetMapping("/disponibilidad")
+    public ResponseEntity<?> consultarDisponibilidad(
+        @RequestParam String rutMedico,
+        @RequestParam String fecha) {
+
+
+    if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}" +   
+                       "|\\d{2}/\\d{2}/\\d{2}" +   
+                       "|\\d{2}/\\d{2}/\\d{4}" +   
+                       "|\\d{4}-\\d{2}-\\d{2}" +   
+                       "|\\d{4}/\\d{2}/\\d{2})$")) { 
+        return ResponseEntity.badRequest().body(
+            "La fecha debe tener formato dd-MM-yyyy, dd/MM/yy, dd/MM/yyyy, yyyy-MM-dd o yyyy/MM/dd"
+        );
     }
+
+    List<String> disponibles = service.consultarDisponibilidad(rutMedico, fecha);
+    return ResponseEntity.ok(disponibles);
+    }
+
+
+
 
 
 
@@ -68,9 +95,12 @@ public class CitaController {
 						  @RequestParam String rutPaciente) {
 
 		try {
-			if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}|\\d{2}/\\d{2}/\\d{2}|\\d{2}/\\d{2}/\\d{4})$")) {
-				return ResponseEntity.badRequest().body("La fecha debe tener formato dd-MM-yyyy, dd/MM/yy o dd/MM/yyyy");
-			}
+			if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}|\\d{2}/\\d{2}/\\d{2}|\\d{2}/\\d{2}/\\d{4}|\\d{4}-\\d{2}-\\d{2})$")) {
+    return ResponseEntity.badRequest().body(
+        "La fecha debe tener formato dd-MM-yyyy, dd/MM/yy, dd/MM/yyyy o yyyy-MM-dd"
+    );
+}
+
 
 			CitaResponseDTO cancelada = service.cancelar(fecha, hora, rutPaciente);
 			return ResponseEntity.ok(cancelada);
@@ -88,8 +118,10 @@ public class CitaController {
 						  @RequestParam String rutPaciente) {
 
 		try {
-			if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}|\\d{2}/\\d{2}/\\d{2}|\\d{2}/\\d{2}/\\d{4})$")) {
-				return ResponseEntity.badRequest().body("La fecha debe tener formato dd-MM-yyyy, dd/MM/yy o dd/MM/yyyy");
+			if (!fecha.matches("^(\\d{2}-\\d{2}-\\d{4}|\\d{2}/\\d{2}/\\d{2}|\\d{2}/\\d{2}/\\d{4}|\\d{4}-\\d{2}-\\d{2})$")) {
+    return ResponseEntity.badRequest().body(
+        "La fecha debe tener formato dd-MM-yyyy, dd/MM/yy, dd/MM/yyyy o yyyy-MM-dd"
+    );
 			}
 
 			service.eliminar(fecha, hora, rutPaciente);
