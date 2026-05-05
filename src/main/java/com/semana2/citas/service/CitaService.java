@@ -52,68 +52,6 @@ public class CitaService {
     }
 
 
-    // Crear una nueva cita médica con validaciones
-
-//     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
-
-//     // Buscar médico por RUT
-//     MedicoEntity medico = medicoRepository.findByRut(request.getRutMedico())
-//             .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
-
-//     // Buscar paciente por RUT
-//     PacienteEntity paciente = pacienteRepository.findByRut(request.getRutPaciente())
-//             .orElseThrow(() -> new RuntimeException("El paciente ingresado no existe"));
-
-//     // convertir a minutos
-//     String[] nuevaHoraSplit = request.getHoraCita().split(":");
-//     int nuevaMin = Integer.parseInt(nuevaHoraSplit[0]) * 60 + Integer.parseInt(nuevaHoraSplit[1]);
-
-//     // horarios permitidos entre (09:00 a 18:00)
-//     int inicio = 9 * 60;
-//     int fin = 18 * 60;
-
-//     if (nuevaMin < inicio || nuevaMin > fin) {
-//         throw new RuntimeException("Las citas solo pueden agendarse entre 09:00 y 18:00");
-//     }
-
-//     // diferencia de 15 minutos mínimo entre cada cita activa del mismo médico en la misma fecha
-//     List<CitaMedicaEntity> citasExistentes = citaMedicaRepository.findByMedicoIdMedico(medico.getIdMedico());
-//     for (CitaMedicaEntity cita : citasExistentes) {
-//         boolean mismaFecha = cita.getFechaCita().equals(request.getFechaCita());
-//         boolean activa = cita.getActiva() == 1;
-
-//         if (mismaFecha && activa) {
-//             String[] horaExistenteSplit = cita.getHoraCita().split(":");
-//             int existenteMin = Integer.parseInt(horaExistenteSplit[0]) * 60 + Integer.parseInt(horaExistenteSplit[1]);
-
-//             int diferencia = Math.abs(nuevaMin - existenteMin);
-
-//             if (diferencia < 15) {
-//                 throw new RuntimeException("Debe existir al menos 15 minutos entre citas para el mismo médico");
-//             }
-//         }
-//     }
-
-//     CitaMedicaEntity nuevaCita = new CitaMedicaEntity();
-//     nuevaCita.setFechaCita(request.getFechaCita());
-//     nuevaCita.setHoraCita(request.getHoraCita());
-//     nuevaCita.setActiva(1); // por defecto activa
-//     nuevaCita.setMedico(medico);
-//     nuevaCita.setPaciente(paciente);
-
-//     CitaMedicaEntity guardada = citaMedicaRepository.save(nuevaCita);
-
-//     return new CitaResponseDTO(
-//             guardada.getIdCita(),
-//             guardada.getFechaCita(),             guardada.getHoraCita(),
-//             guardada.getFechaEmision(),
-//             guardada.getActiva(),
-//             guardada.getMedico().getRut(),
-//             guardada.getPaciente().getRut(),
-//             guardada.getMedico().getEspecialidad()
-//     );
-// }
-
     public CitaResponseDTO crear(CrearCitaRequestDTO request) {
 
     // Buscar médico por RUT
@@ -180,54 +118,6 @@ public class CitaService {
 
 
 
-  
-
-
-//consultar la disponibilidad de un doc en un dia filtrando los horarios que ya tienen una cita programada
-
-//     public List<String> consultarDisponibilidad(String rutMedico, String fecha) {
-
-    
-
-//     LocalDate fechaNormalizada = LocalDate.parse(fecha, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-
-//     //Comprobacion de existencia del médico
-//     MedicoEntity medico = medicoRepository.findByRut(rutMedico)
-//             .orElseThrow(() -> new RuntimeException("El médico ingresado no existe"));
-
-//     // Obtener todas las citas activas del médico en esa fecha
-//     List<CitaMedicaEntity> citasExistentes = citaMedicaRepository
-//             .findByMedicoAndFechaCitaAndActiva(medico, fechaNormalizada, 1);
-
-//     List<String> disponibles = new ArrayList<>();
-
-//     int inicio = 9 * 60;   // 09:00
-//     int fin = 18 * 60;     // 18:00
-
-//     for (int minuto = inicio; minuto <= fin; minuto += 15) {
-//         int hora = minuto / 60;
-//         int min = minuto % 60;
-
-//         String horaFormateada = String.format("%02d:%02d", hora, min);
-
-//         boolean ocupado = false;
-
-//         for (CitaMedicaEntity cita : citasExistentes) {
-//             boolean mismaHora = cita.getHoraCita().equals(horaFormateada);
-
-//             if (mismaHora) {
-//                 ocupado = true;
-//                 break;
-//             }
-//         }
-
-//         if (!ocupado) {
-//             disponibles.add(horaFormateada);
-//         }
-//     }
-
-//     return disponibles;
-// }
 
 
     public List<String> consultarDisponibilidad(String rutMedico, String fecha) {
