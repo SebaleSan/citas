@@ -7,10 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.semana2.citas.dto.MedicoRequestDTO;
 import com.semana2.citas.dto.MedicoResponseDTO;
@@ -86,6 +89,19 @@ class MedicoServiceTest {
         verify(medicoRepository, times(1)).save(any(MedicoEntity.class));
     }
 
-    
+    @Test
+    @DisplayName("Deberia obtener medico por id")
+    void deberiaObtenerMedicoPorId()
+    {
+        when(medicoRepository.findById(1L)).thenReturn(Optional.of(medicoEntity));
+
+        MedicoResponseDTO medico = medicoService.obtenerPorId(1L);
+
+        assertNotNull(medico);
+        assertEquals("Juan", medico.getNombre());
+        assertEquals("Cardiologo", medico.getEspecialidad());
+        assertEquals("12345678-9", medico.getRut());
+        verify(medicoRepository, times(1)).findById(1L);
+    }
 
 }

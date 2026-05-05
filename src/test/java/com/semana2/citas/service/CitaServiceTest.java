@@ -1,4 +1,5 @@
 package com.semana2.citas.service;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,17 @@ class CitaServiceTest {
         crearCitaRequestDTO.setRutPaciente("98765432-1");
     }
 
+
+
+    @AfterEach
+    void tearDown() {
+        medicoEntity = null;
+        pacienteEntity = null;
+        citaMedicaEntity = null;
+        crearCitaRequestDTO = null;
+    }
+
+
     @Test
     @DisplayName("Deberia obtener todas las citas")
     void deberiaObtenerTodasLasCitas()
@@ -126,6 +138,148 @@ class CitaServiceTest {
         assertEquals("98765432-1", citaCreada.getRutPaciente());
         verify(citaMedicaRepository, times(1)).save(any(CitaMedicaEntity.class));
 }
+
+
+    @Test
+    @DisplayName("Deberia consultar disponibilidad y lanzar excepcion por horario no permitido")
+    void deberiaConsultarDisponibilidadYLanzarExcepcionPorHorarioNoPermitido() {
+        crearCitaRequestDTO.setHoraCita("08:00"); 
+
+        when(medicoRepository.findByRut("12345678-9")).thenReturn(Optional.of(medicoEntity));
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            citaService.crear(crearCitaRequestDTO);
+        });
+
+        assertEquals("Las citas solo pueden agendarse entre 09:00 y 18:00", exception.getMessage());
+        verify(citaMedicaRepository, never()).save(any(CitaMedicaEntity.class));
+
+
+    }
+
+    
+
+
+
+    @Test
+    @DisplayName("Deberia cancelar una cita")
+    void deberiaCancelarUnaCita() {
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
+        when(citaMedicaRepository.findByPacienteAndFechaCitaAndHoraCitaAndActiva(
+                pacienteEntity,
+                LocalDate.parse("2023-10-26"),
+                "10:00",
+                1
+        )).thenReturn(Optional.of(citaMedicaEntity));
+        when(citaMedicaRepository.save(any(CitaMedicaEntity.class))).thenReturn(citaMedicaEntity);
+
+        CitaResponseDTO cancelada = citaService.cancelar("26-10-2023", "10:00", "98765432-1");
+
+        assertEquals(0, citaMedicaEntity.getActiva());
+        assertEquals("98765432-1", cancelada.getRutPaciente());
+        verify(citaMedicaRepository, times(1)).save(citaMedicaEntity);
+}
+
+    @Test
+    @DisplayName("Deberia eliminar una cita")
+    void deberiaEliminarUnaCita() {
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
+        when(citaMedicaRepository.findByPacienteAndFechaCitaAndHoraCita(
+                pacienteEntity,
+                LocalDate.parse("2023-10-26"),
+                "10:00"
+        )).thenReturn(Optional.of(citaMedicaEntity));
+
+        citaService.eliminar("26-10-2023", "10:00", "98765432-1");
+
+        verify(citaMedicaRepository, times(1)).delete(citaMedicaEntity);
+    }
+
+
+
+    @Test
+    @DisplayName("No deberia crear cita con medico inexistente")
+    void noDeberiaCrearCitaConMedicoInexistente() {
+        when(medicoRepository.findByRut("12345678-9")).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            citaService.crear(crearCitaRequestDTO);
+        });
+
+        assertEquals("El médico ingresado no existe", exception.getMessage());
+        verify(citaMedicaRepository, never()).save(any(CitaMedicaEntity.class));
+    }
+
+    @Test
+    @DisplayName("No deberia crear cita con paciente inexistente")
+    void noDeberiaCrearCitaConPacienteInexistente() {
+        when(medicoRepository.findByRut("12345678-9")).thenReturn(Optional.of(medicoEntity));
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            citaService.crear(crearCitaRequestDTO);
+        });
+
+        assertEquals("El paciente ingresado no existe", exception.getMessage());
+        verify(citaMedicaRepository, never()).save(any(CitaMedicaEntity.class));
+    }
+
+    @Test
+    @DisplayName("No deberia crear cita en horario ocupado")
+    void noDeberiaCrearCitaEnHorarioOcupado() {
+        when(medicoRepository.findByRut("12345678-9")).thenReturn(Optional.of(medicoEntity));
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
+        citaMedicaEntity.setFechaCita(LocalDate.parse("2023-10-26"));
+        citaMedicaEntity.setHoraCita("10:00");
+        when(citaMedicaRepository.findByMedicoIdMedico(1L)).thenReturn(List.of(citaMedicaEntity));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            citaService.crear(crearCitaRequestDTO);
+        });
+
+        assertEquals("Debe existir al menos 15 minutos entre citas para el mismo médico", exception.getMessage());
+        verify(citaMedicaRepository, never()).save(any(CitaMedicaEntity.class));
+    }
+
+    @Test
+    @DisplayName("No deberia cancelar cita inexistente")
+    void noDeberiaCancelarCitaInexistente() {
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
+        when(citaMedicaRepository.findByPacienteAndFechaCitaAndHoraCitaAndActiva(
+                pacienteEntity,
+                LocalDate.parse("2023-10-26"),
+                "10:00",
+                1
+        )).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            citaService.cancelar("26-10-2023", "10:00", "98765432-1");
+        });
+
+        assertEquals("No existe una cita programada con esos datos", exception.getMessage());
+        verify(citaMedicaRepository, never()).save(any(CitaMedicaEntity.class));
+    }
+
+    @Test
+    @DisplayName("No deberia eliminar cita inexistente")
+    void noDeberiaEliminarCitaInexistente() {
+        when(pacienteRepository.findByRut("98765432-1")).thenReturn(Optional.of(pacienteEntity));
+        when(citaMedicaRepository.findByPacienteAndFechaCitaAndHoraCita(
+                pacienteEntity,
+                LocalDate.parse("2023-10-26"),
+                "10:00"
+                
+        )).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            citaService.eliminar("26-10-2023", "10:00", "98765432-1");
+        });
+
+        assertEquals("No existe una cita con esos datos", exception.getMessage());
+        verify(citaMedicaRepository, never()).delete(any(CitaMedicaEntity.class));
+    }
+
 
 
 
