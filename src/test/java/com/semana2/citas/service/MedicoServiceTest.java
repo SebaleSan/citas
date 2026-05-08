@@ -1,5 +1,6 @@
 package com.semana2.citas.service;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,15 @@ class MedicoServiceTest {
         medicoRequestDTO.setEspecialidad("Cardiologo");
 
     }
+
+
+     @AfterEach
+    void tearDown() {
+        medicoEntity = null;
+        medicoRequestDTO = null;
+    }
+
+
 
     @Test
     @DisplayName("Deberia obtener todos los medicos")

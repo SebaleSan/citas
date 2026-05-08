@@ -1,4 +1,5 @@
 package com.semana2.citas.service;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ import com.semana2.citas.dto.PacienteResponseDTO;
 import com.semana2.citas.entity.PacienteEntity;
 import com.semana2.citas.repository.PacienteRepository;
 
-import jakarta.inject.Inject;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas unitarias - PacienteService")
@@ -49,6 +49,13 @@ class PacienteServiceTest {
         pacienteRequestDTO.setApellido("Gomez");
         pacienteRequestDTO.setRut("87654321-0");
         pacienteRequestDTO.setEdad(30);
+    }
+     @AfterEach
+    void tearDown() {
+    
+        pacienteEntity = null;
+        pacienteRequestDTO = null;
+  
     }
 
     @Test
